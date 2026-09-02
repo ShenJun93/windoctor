@@ -1,7 +1,7 @@
 {
   "name": "windoctor",
   "version": "0.1.0",
-  "description": "Diagnose why Claude Code or Codex CLI fails on Windows in 10 seconds: 'claude is not recognized', python3 not found, Git Bash missing, execution policy, UTF-8, long paths, WSL, IME. Zero dependencies, read-only.",
+  "description": "Claude Code or Codex CLI not working on Windows? Diagnose in 10 seconds: 'claude is not recognized', python3 not found, Git Bash missing, execution policy, UTF-8, long paths, WSL, IME. Zero dependencies, read-only, no telemetry.",
   "bin": {
     "windoctor": "bin/windoctor.js"
   },
@@ -15,21 +15,27 @@
     "node": ">=18"
   },
   "keywords": [
+    "ai-coding-agent",
     "claude-code",
+    "claude-code-windows",
+    "cli",
     "codex",
     "codex-cli",
-    "windows",
-    "doctor",
-    "diagnose",
-    "troubleshooting",
-    "setup",
-    "not-recognized",
-    "python3",
-    "git-bash",
-    "execution-policy",
-    "ai-coding-agent",
+    "codex-windows",
     "developer-tools",
-    "cli"
+    "diagnose",
+    "doctor",
+    "execution-policy",
+    "git-bash",
+    "install",
+    "not-recognized",
+    "not-working",
+    "powershell",
+    "python3",
+    "setup",
+    "troubleshooting",
+    "windows",
+    "windows-11"
   ],
   "license": "MIT",
   "repository": {

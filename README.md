@@ -1,6 +1,6 @@
 # windoctor
 
-**Why does Claude Code / Codex CLI not work on my Windows machine?**
+**Claude Code or Codex CLI not working on Windows 11? Install went fine, `claude` or `codex` is "not recognized", hooks die silently, Vietnamese/CJK input breaks?**
 
 `windoctor` answers that in ten seconds. One command, zero dependencies, nothing installed, nothing changed. It checks the things that actually break coding agents on Windows and prints the exact fix for each.
 
@@ -34,8 +34,10 @@ windoctor 0.1.0 — Claude Code / Codex CLI on Windows
 
 ## Symptoms it explains (exact error text, for searchers)
 
-- `'claude' is not recognized as an internal or external command, operable program or batch file.`
-- `'codex' is not recognized as an internal or external command`
+- `'claude' is not recognized as an internal or external command, operable program or batch file.` (cmd)
+- `claude : The term 'claude' is not recognized as the name of a cmdlet, function, script file, or operable program.` (PowerShell)
+- `'codex' is not recognized as an internal or external command` / `codex cli not working on windows`
+- Claude Code not working in PowerShell, Windows Terminal, or the VS Code terminal right after install
 - `python3: command not found` from a Claude Code hook (Stop, PreToolUse, PostToolUse, SessionStart)
 - `claude.ps1 cannot be loaded because running scripts is disabled on this system`
 - `Claude Code requires Git for Windows` / `Git Bash not found`
