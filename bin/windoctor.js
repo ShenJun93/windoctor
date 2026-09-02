@@ -66,7 +66,18 @@ function checkNpmGlobalBinOnPath() {
 
 function checkAgent(name, pkg, minMajor) {
   const found = which(name);
-  if (!found.length) { report(name, "INFO", `${name} not installed`, `No \`${name}\` on PATH.`, `npm install -g ${pkg}   (note: the package is ${pkg}, not \`${name}\`)`); return; }
+  if (!found.length) {
+    const localBin = path.join(os.homedir(), ".local", "bin");
+    const nativeExe = path.join(localBin, `${name}.exe`);
+    if (name === "claude" && fs.existsSync(nativeExe)) {
+      report(name, "FAIL", "claude is installed (native installer) but not on PATH", `${nativeExe} exists, but ${localBin} is not in PATH. This is the PowerShell "The term 'claude' is not recognized as the name of a cmdlet" case after the native installer.`,
+        `Open a NEW terminal first (PATH changes only reach new windows). If still missing:
+    [Environment]::SetEnvironmentVariable('Path', $env:Path + ';${localBin}', 'User')`, "code.claude.com/docs/en/troubleshoot-install");
+      return;
+    }
+    report(name, "INFO", `${name} not installed`, `No \`${name}\` on PATH.`, name === "claude" ? `Native installer (recommended): irm https://claude.ai/install.ps1 | iex   — or npm install -g ${pkg}` : `npm install -g ${pkg}   (note: the package is ${pkg}, not \`${name}\`)`);
+    return;
+  }
   const ver = run(`${name} --version`);
   report(name, ver ? "PASS" : "WARN", `${name} on PATH`, `${found[0]}${ver ? " · " + ver : " · version check failed"}`, ver ? undefined : `Run \`${name} --version\` manually; a hanging version check usually means a broken shim in ${path.dirname(found[0])}.`);
   const distinct = [...new Set(found.map(f => f.replace(/\.(cmd|exe|ps1)$/i, "").toLowerCase()))];
