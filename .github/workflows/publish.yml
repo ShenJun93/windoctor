@@ -33,9 +33,12 @@ jobs:
         run: |
           V=$(node -p "require('./package.json').version")
           [ "refs/tags/v$V" = "$GITHUB_REF" ] || { echo "tag $GITHUB_REF != v$V"; exit 1; }
-      - name: Dry run
+      - name: Dry run (packaging check on a throwaway version; does not exercise OIDC)
         if: github.event_name == 'workflow_dispatch' && inputs.dry_run
-        run: npm publish --dry-run
+        run: |
+          npm version "0.0.0-dryrun.${GITHUB_RUN_ID}" --no-git-tag-version
+          npm publish --dry-run
+          git checkout -- package.json
       - name: Publish (trusted publishing, OIDC)
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
         run: npm publish

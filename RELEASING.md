@@ -23,5 +23,8 @@ git push --follow-tags     # tag push triggers .github/workflows/publish.yml
 ```
 The workflow verifies the tag matches `package.json`, runs the smoke test, and publishes with provenance.
 
+## Verification limit
+npm does not validate a trusted-publisher entry until a real publish (docs: "errors will only appear when you attempt to publish"). The dry run proves packaging, permissions and tool versions, not the OIDC exchange. If the first tagged release fails with `ENEEDAUTH`, the fix is on npmjs.com: workflow filename must be exactly `publish.yml`, repository `ShenJun93/windoctor`.
+
 ## Test the workflow without publishing
 Actions → "Publish to npm" → Run workflow → `dry_run = true`. This runs `npm publish --dry-run` (packs, lists files, uploads nothing).
