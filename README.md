@@ -8,6 +8,12 @@
 npx windoctor
 ```
 
+Not on npm yet in your region, or want the bleeding edge? Same thing straight from GitHub:
+
+```powershell
+npx github:ShenJun93/windoctor
+```
+
 ```text
 windoctor 0.1.0 — Claude Code / Codex CLI on Windows
 
