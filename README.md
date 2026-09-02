@@ -76,6 +76,10 @@ claude plugin install ShenJun93/windoctor   # Claude Code plugin form
 
 Exit code: `0` all good, `1` warnings, `2` failures. `--json` for machine-readable output.
 
+## Relationship to `claude doctor`
+
+`claude doctor` is Anthropic's built-in check and you should run it too. windoctor covers what it cannot see when `claude` itself is not on PATH or is the wrong copy, plus the Windows-only failures around Git Bash, Python stubs, hooks, execution policy, encoding and IME, and it also covers Codex CLI.
+
 ## Privacy
 
 No telemetry, no network calls, nothing written to disk. The only numbers anyone sees are npm download counts and GitHub traffic.

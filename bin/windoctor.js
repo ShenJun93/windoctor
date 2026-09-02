@@ -84,15 +84,32 @@ function checkAgent(name, pkg, minMajor) {
   if (distinct.length > 1) report(`${name}-dupes`, "WARN", `Multiple ${name} entries on PATH`, found.join("\n    "), "Keep one install (npm global OR standalone installer), remove the other, restart the terminal.");
 }
 
+function checkClaudeInstalls() {
+  const home = os.homedir();
+  const spots = [
+    ["native installer", path.join(home, ".local", "bin", "claude.exe")],
+    ["legacy local npm (~/.claude/local)", path.join(home, ".claude", "local", "claude.cmd")],
+    ["legacy local npm (~/.claude/local)", path.join(home, ".claude", "local", "node_modules", ".bin", "claude.cmd")],
+  ];
+  const prefix = run("npm config get prefix");
+  if (prefix) spots.push(["npm global", path.join(prefix, "claude.cmd")]);
+  const wg = run("winget list --id Anthropic.ClaudeCode --disable-interactivity");
+  const present = spots.filter(([, p]) => fs.existsSync(p)).map(([k, p]) => `${k}: ${p}`);
+  if (wg && /Anthropic\.ClaudeCode/i.test(wg)) present.push("winget: Anthropic.ClaudeCode");
+  const kinds = new Set(present.map(x => x.split(":")[0]));
+  if (kinds.size > 1) report("claude-installs", "WARN", "More than one Claude Code installation found", present.join("\n    ") + "\n    Which one runs depends on PATH order; auto-update can then update the wrong copy and `claude --version` lies.", "Keep the native install (%USERPROFILE%\.local\bin\claude.exe) and remove the others: npm uninstall -g @anthropic-ai/claude-code ; Remove-Item -Recurse ~/.claude/local ; winget uninstall Anthropic.ClaudeCode", "code.claude.com/docs/en/troubleshoot-install#check-for-conflicting-installations");
+  else if (present.length) report("claude-installs", "PASS", "Single Claude Code installation", present[0]);
+}
+
 function checkGitBash() {
   const git = which("git");
-  if (!git.length) { report("git", "FAIL", "Git for Windows not on PATH", "Claude Code on Windows requires Git for Windows (it runs commands through Git Bash).", "winget install Git.Git   then restart the terminal."); return; }
+  if (!git.length) { report("git", "WARN", "Git for Windows not on PATH", "Official message: \"Claude Code on Windows requires either Git for Windows (for bash) or PowerShell\". Without Git Bash, hooks and most community plugins written as bash commands will not run.", "winget install Git.Git   then restart the terminal.", "code.claude.com/docs/en/troubleshoot-install"); return; }
   report("git", "PASS", "git on PATH", `${git[0]} · ${run("git --version") || ""}`);
   const envBash = process.env.CLAUDE_CODE_GIT_BASH_PATH;
   const candidates = [envBash, "C:\\Program Files\\Git\\bin\\bash.exe", "C:\\Program Files\\Git\\usr\\bin\\bash.exe", path.join(path.dirname(path.dirname(git[0])), "bin", "bash.exe")].filter(Boolean);
   const bash = candidates.find(p => fs.existsSync(p));
   const sysBash = which("bash").find(p => /System32\\bash\.exe$/i.test(p));
-  if (!bash) report("git-bash", "FAIL", "Git Bash (bash.exe) not found", "Claude Code needs Git's bash.exe.", "Reinstall Git for Windows, or set CLAUDE_CODE_GIT_BASH_PATH to your bash.exe.");
+  if (!bash) report("git-bash", "WARN", "Git Bash (bash.exe) not found", "git is on PATH but bash.exe is not where Claude Code looks. Hooks and bash-based plugins will fail.", "Reinstall Git for Windows, or set CLAUDE_CODE_GIT_BASH_PATH to your bash.exe.", "code.claude.com/docs/en/troubleshoot-install");
   else report("git-bash", envBash ? "PASS" : "PASS", "Git Bash found", `${bash}${envBash ? " (via CLAUDE_CODE_GIT_BASH_PATH)" : ""}`);
   if (sysBash && which("bash")[0] === sysBash) report("wsl-bash-shadow", "WARN", "`bash` on PATH resolves to WSL's System32\\bash.exe", `${sysBash} comes before Git's bash. Hooks and scripts that call \`bash\` may run inside WSL instead of Git Bash.`, "Move `C:\\Program Files\\Git\\bin` above `%SystemRoot%\\System32` in PATH, or set CLAUDE_CODE_GIT_BASH_PATH.");
 }
@@ -195,7 +212,7 @@ function checkClaudeConfig() {
 
 // ---------- run ----------
 [checkPlatform, checkNode, checkNpmGlobalBinOnPath, () => checkAgent("claude", "@anthropic-ai/claude-code", 1), () => checkAgent("codex", "@openai/codex", 0),
- checkGitBash, checkPythonStubs, checkExecutionPolicy, checkEncoding, checkLongPaths, checkTerminal, checkRg, checkWsl, checkIme, checkClaudeConfig]
+ checkClaudeInstalls, checkGitBash, checkPythonStubs, checkExecutionPolicy, checkEncoding, checkLongPaths, checkTerminal, checkRg, checkWsl, checkIme, checkClaudeConfig]
   .forEach(fn => { try { fn(); } catch (e) { report(fn.name, "INFO", `${fn.name} skipped`, String(e.message)); } });
 
 const counts = results.reduce((a, r) => (a[r.status] = (a[r.status] || 0) + 1, a), {});
