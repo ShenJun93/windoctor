@@ -39,6 +39,9 @@ jobs:
           npm version "0.0.0-dryrun.${GITHUB_RUN_ID}" --no-git-tag-version
           npm publish --dry-run --tag dryrun
           git checkout -- package.json
-      - name: Publish (trusted publishing, OIDC)
+      - name: Publish (trusted publishing, OIDC) — skipped if this version is already on npm
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
-        run: npm publish
+        run: |
+          V=$(node -p "require('./package.json').version")
+          if npm view "windoctor@$V" version >/dev/null 2>&1; then echo "windoctor@$V already published; nothing to do"; exit 0; fi
+          npm publish

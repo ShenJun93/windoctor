@@ -1,5 +1,7 @@
 # windoctor
 
+*Tiếng Việt: [README.vi.md](README.vi.md)*
+
 **Claude Code or Codex CLI not working on Windows 11? Install went fine, `claude` or `codex` is "not recognized", hooks die silently, Vietnamese/CJK input breaks?**
 
 `windoctor` answers that in ten seconds. One command, zero dependencies, nothing installed, nothing changed. It checks the things that actually break coding agents on Windows and prints the exact fix for each.
