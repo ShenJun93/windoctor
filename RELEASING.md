@@ -2,15 +2,19 @@
 
 Releases are published by GitHub Actions through npm Trusted Publishing (OIDC). No npm token lives on any machine.
 
+## History
+- 0.1.0 published manually on 2026-09-02 12:44 UTC by npm user `hoanguyen93` from commit `40e2054` (no provenance; local publish). Every later version goes through the workflow below.
+
 ## One-time setup (package owner, on npmjs.com)
-1. The package must already exist on npm (first publish is manual: `npm login && npm publish --access public`).
+1. Done: the package exists (`windoctor@0.1.0`).
 2. npmjs.com → package `windoctor` → Settings → Trusted publisher → GitHub Actions:
    - Organization or user: `ShenJun93`
    - Repository: `windoctor`
    - Workflow filename: `publish.yml`
    - Environment: leave blank
    - Allowed actions: `npm publish`
-3. Optional hardening: Settings → Publishing access → "Require two-factor authentication or an automation token / trusted publisher".
+3. Do not push tag `v0.1.0`: it would re-run the publish of an existing version and fail. The next release is `npm version patch` → `v0.1.1`, only when there is a real change.
+4. Optional hardening: Settings → Publishing access → "Require two-factor authentication or an automation token / trusted publisher".
 
 ## Every release
 ```bash
