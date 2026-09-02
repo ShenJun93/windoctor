@@ -1,0 +1,12 @@
+{
+  "name": "windoctor",
+  "version": "0.1.0",
+  "description": "Diagnose why Claude Code and Codex CLI misbehave on Windows: PATH, Git Bash, python3 stubs, execution policy, encoding, WSL mismatch, IME. Zero dependencies.",
+  "bin": { "windoctor": "bin/windoctor.js" },
+  "files": ["bin", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "keywords": ["claude-code", "codex", "windows", "doctor", "setup", "troubleshooting", "ai-coding-agent"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/ShenJun93/windoctor" },
+  "scripts": { "test": "node test/smoke.js" }
+}
