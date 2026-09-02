@@ -1,0 +1,23 @@
+name: Publish to npm
+# Runs when a version tag is pushed (v0.1.0). Uses npm trusted publishing (OIDC) if
+# configured at npmjs.com → package → Settings → Trusted publisher; otherwise needs
+# an NPM_TOKEN secret. Either one is a founder-only action.
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: node test/smoke.js
+      - run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

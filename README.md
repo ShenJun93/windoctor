@@ -26,6 +26,18 @@ windoctor 0.1.0 — Claude Code / Codex CLI on Windows
 1 FAIL · 2 WARN · 9 PASS · 3 INFO
 ```
 
+## Symptoms it explains (exact error text, for searchers)
+
+- `'claude' is not recognized as an internal or external command, operable program or batch file.`
+- `'codex' is not recognized as an internal or external command`
+- `python3: command not found` from a Claude Code hook (Stop, PreToolUse, PostToolUse, SessionStart)
+- `claude.ps1 cannot be loaded because running scripts is disabled on this system`
+- `Claude Code requires Git for Windows` / `Git Bash not found`
+- `UnicodeEncodeError: 'charmap' codec can't encode character` in a hook
+- `ENAMETOOLONG` / `Filename too long` during `npm install -g @anthropic-ai/claude-code`
+- Vietnamese, Japanese, Chinese or Korean characters dropped or duplicated while typing in the terminal
+- Codex in WSL storing config or worktrees on the Windows side (`CODEX_HOME`)
+
 ## What it checks
 
 | Check | Symptom it explains |
