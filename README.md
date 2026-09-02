@@ -46,6 +46,15 @@ windoctor 0.1.0 — Claude Code / Codex CLI on Windows
 - Vietnamese, Japanese, Chinese or Korean characters dropped or duplicated while typing in the terminal
 - Codex in WSL storing config or worktrees on the Windows side (`CODEX_HOME`)
 
+## Use it from inside Claude Code or Codex
+
+The repo doubles as an agent skill. Install it once and the agent runs the diagnosis for you when you describe a Windows failure:
+
+```bash
+npx skills add ShenJun93/windoctor      # any agent supported by skills.sh
+claude plugin install ShenJun93/windoctor   # Claude Code plugin form
+```
+
 ## What it checks
 
 | Check | Symptom it explains |

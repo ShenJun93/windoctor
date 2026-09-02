@@ -9,7 +9,9 @@
     "bin",
     "README.md",
     "LICENSE",
-    "docs"
+    "docs",
+    "skills",
+    ".claude-plugin"
   ],
   "engines": {
     "node": ">=18"
