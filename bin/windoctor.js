@@ -94,7 +94,7 @@ function checkPythonStubs() {
       const real = which(exe.replace(".exe", ""));
       const firstIsStub = real[0] && real[0].toLowerCase() === p.toLowerCase();
       if (firstIsStub) report(`py-stub-${exe}`, "FAIL", `${exe} resolves to the Microsoft Store stub`, `${p} is an App Execution Alias that opens the Store instead of running Python. Hooks that call \`${exe.replace(".exe", "")}\` fail with "command not found" or open a Store window.`,
-        "Settings → Apps → Advanced app settings → App execution aliases → turn OFF the python/python3 aliases; then install Python from python.org or `winget install Python.Python.3.13`.");
+        "Settings → Apps → Advanced app settings → App execution aliases → turn OFF the python/python3 aliases; then install Python from python.org or `winget install Python.Python.3.13`.", "anthropics/claude-code#85475");
     }
   }
   const py = which("python"), py3 = which("python3");
@@ -176,6 +176,9 @@ function checkClaudeConfig() {
     if (py3) report("claude-hooks-python3", "FAIL", "A hook calls `python3` but `python3` is not on PATH", settings, "Fix python3 (see above) or point the hook at your python.exe.");
     else report("claude-settings", "PASS", "~/.claude/settings.json parses", `${Object.keys(j.hooks || {}).length} hook event(s) configured`);
     if (bashHooks) report("claude-hooks-bash", "INFO", "Hooks invoke `bash`", "Make sure `bash` resolves to Git Bash, not WSL (see wsl-bash-shadow).");
+    const cmds = []; (function walk(v) { if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === "object") { if (typeof v.command === "string") cmds.push(v.command); Object.values(v).forEach(walk); } })(j.hooks || {});
+    const backslash = cmds.filter(c => /[A-Za-z]:\\/.test(c) && !/[A-Za-z]:\\\\/.test(c) && !/^"?[A-Za-z]:\\/.test(c.trim()));
+    if (backslash.length) report("claude-hooks-backslash", "WARN", "Hook command contains a Windows path with single backslashes", `${backslash.length} hook command(s) like: ${backslash[0].slice(0, 80)}. Hooks run through Git Bash, which eats unescaped backslashes, so the command can silently never execute.`, "Use forward slashes (C:/Users/...), or quote the path, or double the backslashes in settings.json.", "anthropics/claude-code#88578, #85475");
   } catch (e) { report("claude-settings", "FAIL", "~/.claude/settings.json is not valid JSON", String(e.message), "Fix the JSON; Claude Code silently ignores broken settings."); }
 }
 
