@@ -58,7 +58,8 @@ function checkAgent(name, pkg, minMajor) {
   if (!found.length) { report(name, "INFO", `${name} not installed`, `No \`${name}\` on PATH.`, `npm install -g ${pkg}   (note: the package is ${pkg}, not \`${name}\`)`); return; }
   const ver = run(`${name} --version`);
   report(name, ver ? "PASS" : "WARN", `${name} on PATH`, `${found[0]}${ver ? " · " + ver : " · version check failed"}`, ver ? undefined : `Run \`${name} --version\` manually; a hanging version check usually means a broken shim in ${path.dirname(found[0])}.`);
-  if (found.length > 1) report(`${name}-dupes`, "WARN", `Multiple ${name} entries on PATH`, found.join("\n    "), "Keep one install (npm global OR standalone installer), remove the other, restart the terminal.");
+  const distinct = [...new Set(found.map(f => f.replace(/\.(cmd|exe|ps1)$/i, "").toLowerCase()))];
+  if (distinct.length > 1) report(`${name}-dupes`, "WARN", `Multiple ${name} entries on PATH`, found.join("\n    "), "Keep one install (npm global OR standalone installer), remove the other, restart the terminal.");
 }
 
 function checkGitBash() {
@@ -88,7 +89,7 @@ function checkPythonStubs() {
   const py = which("python"), py3 = which("python3");
   if (py.length && !py3.length) report("python3-alias", "WARN", "`python3` is not on PATH (only `python`)", "Claude Code hooks and many plugins written for macOS/Linux call `python3`. On this machine that fails with `python3: command not found`.",
     `Create a shim next to python.exe:\n    copy "${py[0]}" "${path.join(path.dirname(py[0]), "python3.exe")}"\n  or add a python3.cmd on PATH containing:  @python %*`);
-  else if (py3.length) report("python3-alias", "PASS", "`python3` resolves", `${py3[0]} · ${run("python3 --version") || ""}`);
+  else if (py3.length) { const v = run("python3 --version"); report("python3-alias", v ? "PASS" : "WARN", "`python3` resolves", `${py3[0]} · ${v || "but `python3 --version` failed from Node (shim without .exe/.cmd? PowerShell may still resolve it)"}`, v ? undefined : "Prefer a real python3.exe copy or python3.cmd so cmd.exe, PowerShell and Git Bash all resolve it."); }
   else report("python", "INFO", "Python not on PATH", "Only needed if you use hooks/plugins that run Python.", "winget install Python.Python.3.13");
 }
 
@@ -145,7 +146,11 @@ function checkIme() {
   const langs = ps("(Get-WinUserLanguageList | ForEach-Object { $_.LanguageTag }) -join ','") || "";
   const ime = /vi|ja|ko|zh/i.test(langs);
   if (ime) report("ime", "INFO", "IME language detected", `Keyboard languages: ${langs}. Claude Code and Codex TUIs have open issues with IME composition (duplicate candidates, dropped characters), worst on legacy conhost.`, "Use Windows Terminal; type Vietnamese/CJK prompts in an editor and paste, or use the Desktop/VS Code UI for long non-ASCII input.", "anthropics/claude-code#… (28 open IME issues)");
-  else report("ime", "PASS", "No IME layout detected", langs || "unknown");
+  else {
+    const tools = (ps("Get-Process -Name UniKeyNT,UniKey,EVKey,EVKey64,GoTiengViet,OpenKey -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ProcessName") || "").split(/\r?\n/).filter(Boolean);
+    if (tools.length) report("ime", "INFO", "Vietnamese input tool running", `${tools.join(", ")} with layout ${langs}. Telex/VNI tools send composed characters through the console; Claude Code/Codex TUIs can drop or duplicate them, worst on legacy conhost.`, "Use Windows Terminal; for long Vietnamese prompts, compose in an editor and paste.", "anthropics/claude-code (28 open IME issues)");
+    else report("ime", "PASS", "No IME layout or Vietnamese input tool detected", langs || "unknown");
+  }
 }
 
 function checkClaudeConfig() {
