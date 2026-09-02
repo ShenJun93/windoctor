@@ -47,6 +47,10 @@ windoctor 0.1.0 — Claude Code / Codex CLI on Windows
 
 Exit code: `0` all good, `1` warnings, `2` failures. `--json` for machine-readable output.
 
+## Privacy
+
+No telemetry, no network calls, nothing written to disk. The only numbers anyone sees are npm download counts and GitHub traffic.
+
 ## What it does not do
 
 It never modifies your system. Every fix is printed for you to run. `windoctor --fix` is not a thing yet; tell me in an issue which fixes you want automated.

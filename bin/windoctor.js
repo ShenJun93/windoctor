@@ -9,6 +9,17 @@ const path = require("node:path");
 const args = new Set(process.argv.slice(2));
 const JSON_OUT = args.has("--json");
 const isWin = process.platform === "win32";
+const PKG_VERSION = require("../package.json").version;
+if (args.has("--version") || args.has("-v")) { console.log(PKG_VERSION); process.exit(0); }
+if (args.has("--help") || args.has("-h")) {
+  console.log(`windoctor ${PKG_VERSION} — diagnose Claude Code / Codex CLI setups on Windows
+
+Usage: npx windoctor [--json] [--version] [--help]
+
+Read-only: prints every problem found with the exact fix. Never changes your system.
+No telemetry. Exit code 0 = ok, 1 = warnings, 2 = failures.`);
+  process.exit(0);
+}
 
 function run(cmd, opts = {}) {
   try {
@@ -174,7 +185,7 @@ function checkClaudeConfig() {
   .forEach(fn => { try { fn(); } catch (e) { report(fn.name, "INFO", `${fn.name} skipped`, String(e.message)); } });
 
 const counts = results.reduce((a, r) => (a[r.status] = (a[r.status] || 0) + 1, a), {});
-if (JSON_OUT) { console.log(JSON.stringify({ version: "0.1.0", platform: process.platform, counts, results }, null, 2)); }
+if (JSON_OUT) { console.log(JSON.stringify({ version: PKG_VERSION, platform: process.platform, counts, results }, null, 2)); }
 else {
   const icon = { PASS: "✔", WARN: "!", FAIL: "✖", INFO: "·" };
   console.log(`\nwindoctor 0.1.0 — Claude Code / Codex CLI on Windows\n`);
