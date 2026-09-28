@@ -45,7 +45,7 @@
     "url": "git+https://github.com/ShenJun93/windoctor.git"
   },
   "scripts": {
-    "test": "node test/smoke.js"
+    "test": "node test/unit.js && node test/smoke.js"
   },
   "homepage": "https://github.com/ShenJun93/windoctor#readme",
   "bugs": {

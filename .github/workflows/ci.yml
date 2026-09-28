@@ -13,4 +13,5 @@ jobs:
         with: { node-version: "${{ matrix.node }}" }
       - run: node bin/windoctor.js --help
       - run: node bin/windoctor.js --json > out.json || true
+      - run: node test/unit.js
       - run: node test/smoke.js

@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm install -g npm@latest
       - run: node --version && npm --version
-      - run: node test/smoke.js
+      - run: node test/unit.js && node test/smoke.js
       - name: Check tag matches package.json version
         if: github.event_name == 'push'
         run: |
